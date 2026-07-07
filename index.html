@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark light" />
 <title>GROVE — TGE Launch Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme:dark;
     --pine:#0C1A13;        /* canvas */
     --moss:#122419;        /* panels */
     --moss-2:#162B1E;      /* raised panels */
@@ -20,6 +22,30 @@
     --ember:#DE8A76;       /* negative */
     --hairline:rgba(237,232,218,.14);
     --hairline-soft:rgba(237,232,218,.08);
+    --skel-bg:rgba(237,232,218,.07);
+    --skel-shine:rgba(237,232,218,.10);
+    --alloc-team:rgba(143,211,168,.45);
+    --bar-rest:rgba(143,211,168,.28);
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      color-scheme:light;
+      --pine:#F1EEE3;      /* paper canvas */
+      --moss:#FAF8EF;      /* panels */
+      --moss-2:#F3F0E3;
+      --fern:#35714C;
+      --leaf:#1E6F44;      /* deep leaf ink for accents */
+      --bone:#182A1F;      /* pine ink text */
+      --bone-dim:#5B685D;
+      --ochre:#96700F;
+      --ember:#B0492F;
+      --hairline:rgba(24,42,31,.18);
+      --hairline-soft:rgba(24,42,31,.10);
+      --skel-bg:rgba(24,42,31,.07);
+      --skel-shine:rgba(24,42,31,.09);
+      --alloc-team:rgba(30,111,68,.38);
+      --bar-rest:rgba(30,111,68,.24);
+    }
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -39,6 +65,7 @@
   /* ---------- Header ---------- */
   header{position:relative;padding:44px 0 30px;border-bottom:1px solid var(--hairline);overflow:hidden}
   .veins{position:absolute;right:-40px;top:-60px;width:420px;height:420px;opacity:.10;pointer-events:none}
+  .veins g{stroke:var(--leaf)}
   .eyebrow{
     font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
     text-transform:uppercase;color:var(--leaf);margin-bottom:14px;
@@ -105,10 +132,10 @@
   .chg-flat{color:var(--bone-dim)}
   .cell .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bone-dim);margin-top:6px}
 
-  .skel{position:relative;overflow:hidden;background:rgba(237,232,218,.07);border-radius:3px;color:transparent!important;user-select:none}
+  .skel{position:relative;overflow:hidden;background:var(--skel-bg);border-radius:3px;color:transparent!important;user-select:none}
   .skel::after{
     content:"";position:absolute;inset:0;
-    background:linear-gradient(90deg,transparent,rgba(237,232,218,.10),transparent);
+    background:linear-gradient(90deg,transparent,var(--skel-shine),transparent);
     animation:shimmer 1.4s infinite;
   }
   @keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
@@ -193,18 +220,18 @@
   .tvl-cap{font-size:13px;color:var(--bone-dim);margin-bottom:18px}
   .bar{display:flex;height:14px;border-radius:99px;overflow:hidden;border:1px solid var(--hairline-soft)}
   .bar .eth{background:var(--fern);width:81%}
-  .bar .rest{background:rgba(143,211,168,.28);width:19%}
+  .bar .rest{background:var(--bar-rest);width:19%}
   .bar-legend{display:flex;gap:20px;margin-top:12px;flex-wrap:wrap}
   .bar-legend span{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--bone-dim)}
   .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:-1px}
   .sw-eth{background:var(--fern)}
-  .sw-rest{background:rgba(143,211,168,.28)}
+  .sw-rest{background:var(--bar-rest)}
   .alloc-note{margin-top:16px;font-size:13.5px;color:var(--bone-dim)}
-  .sw-team{background:rgba(143,211,168,.45)}
+  .sw-team{background:var(--alloc-team)}
   .sw-found{background:var(--ochre)}
   .alloc-bar{display:flex;height:14px;border-radius:99px;overflow:hidden;border:1px solid var(--hairline-soft);margin-top:18px}
   .alloc-bar .a-sky{background:var(--fern);width:70%}
-  .alloc-bar .a-team{background:rgba(143,211,168,.45);width:25%}
+  .alloc-bar .a-team{background:var(--alloc-team);width:25%}
   .alloc-bar .a-found{background:var(--ochre);width:5%}
 
   /* Per-card source attribution */
@@ -214,6 +241,21 @@
   }
   .src-line a{color:var(--bone-dim);border-bottom-color:var(--hairline)}
   .src-line a:hover{color:var(--leaf)}
+  .ledger-src{
+    padding:10px 0 12px;border-bottom:1px solid var(--hairline);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bone-dim);line-height:1.9;
+  }
+  .ledger-src a{color:var(--bone-dim);border-bottom-color:var(--hairline)}
+  .ledger-src a:hover{color:var(--leaf)}
+
+  /* Farm live strip */
+  .farm-live{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    background:var(--moss);border:1px solid var(--hairline-soft);border-radius:6px;
+    margin-bottom:6px;
+  }
+  .farm-live .cell{padding:18px 18px 16px}
+  .farm-live .value{font-size:20px}
 
   /* Sources & method */
   .method p{font-size:14px;color:var(--bone);margin-bottom:10px}
@@ -248,6 +290,7 @@
   }
   @media (max-width:860px){
     .ledger{grid-template-columns:1fr 1fr}
+    .farm-live{grid-template-columns:1fr 1fr}
     .cell.price{grid-column:1/-1;border-right:none;border-bottom:1px solid var(--hairline-soft)}
     .two-col{grid-template-columns:1fr}
     .seal{width:104px;height:104px}
@@ -324,6 +367,8 @@
       <div class="sub">10B fixed supply</div>
     </div>
   </div>
+
+  <div class="ledger-src">Price &amp; volume source: <a href="https://www.coingecko.com/en/coins/grove" target="_blank" rel="noopener">CoinGecko</a> — a volume-weighted average across GROVE's tracked markets: Coinbase GROVE-USD (~87% of day-one volume) + Uniswap v4 pools on Ethereum. Viewed inside Claude, the same figures arrive via Claude web search reading that listing. Contract-verified: <a href="https://etherscan.io/token/0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406" target="_blank" rel="noopener">0xB30F…9406</a>.</div>
 
   <!-- AI market pulse -->
   <div class="pulse-card" id="pulseCard" hidden>
@@ -434,16 +479,71 @@
     </div>
   </section>
 
+  <!-- Farm & rewards -->
+  <section>
+    <div class="sec-head">
+      <span class="mono">03 — Farm watch</span>
+      <h2>Farm &amp; rewards activity</h2>
+    </div>
+    <div class="farm-live">
+      <div class="cell"><div class="label">USDS staked in farm</div><div class="value skel" id="fStaked">—</div><div class="sub">≈ USD</div></div>
+      <div class="cell"><div class="label">GROVE streamed / day</div><div class="value skel" id="fRate">—</div><div class="sub">current reward rate</div></div>
+      <div class="cell"><div class="label">Indicative APR</div><div class="value skel" id="fApr">—</div><div class="sub">at current GROVE price</div></div>
+      <div class="cell"><div class="label">Current period ends</div><div class="value skel" id="fEnd">—</div><div class="sub">distributions ~weekly</div></div>
+    </div>
+    <div class="ledger-src" style="border-bottom:none;padding-bottom:18px">Farm source: read on-chain from the USDS → GROVE farm contract <a href="https://etherscan.io/address/0x4E41488C19cD35EB4de3083Fc3e204854c75c86a" target="_blank" rel="noopener">0x4E41…c86a</a> (totalSupply · rewardRate · periodFinish) via public Ethereum RPC, with a Claude web-search fallback inside Claude. <span id="farmNote"></span></div>
+    <div class="two-col">
+      <div class="card dist">
+        <h3>How the GROVE farm works</h3>
+        <p><b>Live now</b> — GROVE is distributed through Sky Ecosystem Rewards on Sky.money: supply USDS and accrue GROVE in proportion to your share of the pool. A set amount of GROVE is distributed, so the effective rate floats with pool size. No lockups, no minimum holding period, no exit fees — the underlying USDS stays withdrawable.</p>
+        <p><b>The stream</b> — the Jul 2, 2026 executive spell (earliest execution timed to listing day, Jul 6 at 18:00 UTC) initializes the farm with a treasury vest streaming <b>2.45B GROVE over 730 days</b> — 24.5% of total supply, ≈3.36M GROVE per day at the base rate — with distributions pushed to the farm roughly weekly by a keeper job.</p>
+        <p><b>Under the hood</b> — a StakingRewards contract where users stake USDS, fed by a DssVestTransferrable treasury vest through a VestedRewardsDistribution contract. Same architecture as Spark's SPK farm; only the USDS → GROVE farm exists at launch (no staked-SKY farm).</p>
+        <div class="src-line">Sources: <a href="https://github.com/sky-ecosystem/executive-votes/blob/c15b52b50f9ae7106bb91f8cfc34c9418f02fb79/2026/executive-vote-2026-07-02-grove-token-rewards.md" target="_blank" rel="noopener">Sky executive vote (Jul 2, 2026)</a> · <a href="https://sky.money/sky-ecosystem-rewards" target="_blank" rel="noopener">Sky.money — Ecosystem Rewards</a> · <a href="https://forum.skyeco.com/t/technical-scope-grove-farm/27999" target="_blank" rel="noopener">Sky Forum — Grove Farm technical scope</a></div>
+      </div>
+      <div class="card">
+        <h3>Activity log — curated</h3>
+        <p class="tvl-cap">Point-in-time notes, updated by hand after each check-in. The live reward rate and pool size are on the Sky.money Ecosystem Rewards page; protocol-wide figures on Grove Data.</p>
+        <ul class="log">
+          <li>
+            <span class="date">Jul 2</span>
+            <span class="what">Farm-initialization executive vote posted
+              <span class="note">2.45B GROVE over 2 years to USDS stakers; earliest execution set to Jul 6 at 18:00 UTC — timed to listing day.</span>
+            </span>
+          </li>
+          <li>
+            <span class="date">Jul 6</span>
+            <span class="what">GROVE goes live in Sky Ecosystem Rewards on Sky.money
+              <span class="note">Announced alongside the Coinbase listing — another Sky Agent token for USDS suppliers, with distribution administered through Sky-supported programs.</span>
+            </span>
+          </li>
+          <li>
+            <span class="date">Jul 6</span>
+            <span class="what">Early-community claim opens at app.grove.finance
+              <span class="note">90-day window on Ethereum; claim uptake worth tracking as the window runs.</span>
+            </span>
+          </li>
+          <li>
+            <span class="date">Next</span>
+            <span class="what">Pool size, effective reward rate, claim uptake <span class="badge">To add</span>
+              <span class="note">Log these here after each weekly check-in as figures get reported.</span>
+            </span>
+          </li>
+        </ul>
+        <div class="src-line">Sources: <a href="https://x.com/SkyEcosystem" target="_blank" rel="noopener">@SkyEcosystem</a> · <a href="https://www.grove.finance/blog/claim-your-grove" target="_blank" rel="noopener">Grove blog — Claim your GROVE</a> · live figures at <a href="https://sky.money" target="_blank" rel="noopener">sky.money</a> and <a href="https://data.grove.finance" target="_blank" rel="noopener">Grove Data</a></div>
+      </div>
+    </div>
+  </section>
+
   <!-- Sources & method -->
   <section>
     <div class="sec-head">
-      <span class="mono">03 — Sources &amp; method</span>
+      <span class="mono">04 — Sources &amp; method</span>
       <h2>Where every number comes from</h2>
     </div>
     <div class="two-col">
       <div class="card method">
         <h3>Live figures</h3>
-        <p><b>Two sources, environment-dependent.</b> Viewed inside Claude, the artifact sandbox blocks third-party APIs, so figures arrive via Claude's live web search — which is directed to read CoinGecko's Grove listing (ID <a href="https://www.coingecko.com/en/coins/grove" target="_blank" rel="noopener">grove-2</a>, verified against the official contract 0xB30F…9406). Hosted or opened outside Claude, the page pulls the same figures directly from CoinGecko's public API. The status bar always names the source that produced the numbers on screen.</p>
+        <p><b>Two sources, environment-dependent.</b> Viewed inside Claude, the artifact sandbox blocks third-party APIs, so figures arrive via Claude's live web search — which is directed to read CoinGecko's Grove listing (ID <a href="https://www.coingecko.com/en/coins/grove" target="_blank" rel="noopener">grove-2</a>, verified against the official contract 0xB30F…9406). Hosted or opened outside Claude, the page pulls the same figures directly from CoinGecko's public API. The status bar always names the source that produced the numbers on screen. Farm figures are read on-chain — totalSupply, rewardRate, and periodFinish straight from the REWARDS_USDS_GROVE farm contract — via public Ethereum RPCs.</p>
         <p><b>Guardrails on the web-search layer.</b> The query is scoped to the contract, look-alike tickers are excluded by name — GroveCoin (GRV), the GroveWars token on Theta, and GROOVE all pollute aggregators — and it's instructed to leave a blank rather than guess. Sources found on each refresh appear as linked chips in the Market pulse card. This layer requires the viewer to be signed in to Claude; the direct CoinGecko path does not.</p>
         <p>Live figures can lag real-time and should be verified against an exchange or Grove Data before external use.</p>
       </div>
@@ -454,7 +554,9 @@
           <li><span class="d">Jul 6</span><span><a href="https://cryptobriefing.com/coinbase-grove-usd-limit-only-mode/" target="_blank" rel="noopener">Crypto Briefing — GROVE-USD in limit-only mode</a> — listing structure, roadmap dates</span></li>
           <li><span class="d">Jul 6</span><span><a href="https://www.grove.finance/blog/claim-your-grove" target="_blank" rel="noopener">Grove blog — Claim your GROVE</a> — claim process, 90-day window</span></li>
           <li><span class="d">Jun 24</span><span><a href="https://www.grove.finance/blog/introducing-the-grove-token" target="_blank" rel="noopener">Grove blog — Introducing the Grove Token</a> — token details</span></li>
+          <li><span class="d">Jul 2</span><span><a href="https://github.com/sky-ecosystem/executive-votes/blob/c15b52b50f9ae7106bb91f8cfc34c9418f02fb79/2026/executive-vote-2026-07-02-grove-token-rewards.md" target="_blank" rel="noopener">Sky executive vote — Initialize GROVE Token Rewards</a> — 2.45B / 730-day vest, farm contract addresses</span></li>
           <li><span class="d">Ref</span><span><a href="https://docs.grove.finance/grove-token" target="_blank" rel="noopener">Grove Docs — GROVE Token</a> — contract, allocation, audits · <a href="https://forum.skyeco.com/t/technical-scope-grove-farm/27999" target="_blank" rel="noopener">Sky Forum — Grove Farm scope</a> · <a href="https://x.com/SkyEcosystem" target="_blank" rel="noopener">@SkyEcosystem</a></span></li>
+          <li><span class="d">Ref</span><span><a href="https://sky.money/sky-ecosystem-rewards" target="_blank" rel="noopener">Sky.money — Ecosystem Rewards</a> — reward mechanics · <a href="https://vote.sky.money/" target="_blank" rel="noopener">vote.sky.money</a> — farm spell status</span></li>
         </ul>
       </div>
     </div>
@@ -497,6 +599,12 @@
     if (abs >= 1e3) return "$" + (n/1e3).toFixed(1) + "K";
     return "$" + n.toFixed(0);
   };
+  const fmtTok = n => {
+    if (n == null || isNaN(n)) return "—";
+    if (n >= 1e6) return (n/1e6).toFixed(2) + "M";
+    if (n >= 1e3) return (n/1e3).toFixed(0) + "K";
+    return Math.round(n).toLocaleString("en-US");
+  };
   const fmtChg = n => {
     if (n == null || isNaN(n)) return {t:"—", c:"chg-flat"};
     const s = (n > 0 ? "▲ +" : n < 0 ? "▼ " : "") + n.toFixed(1) + "%";
@@ -504,16 +612,20 @@
   };
 
   const statCells = ["vPrice","vChange","vVol","vMcap","vFdv"];
+  const farmCells = ["fStaked","fRate","fApr","fEnd"];
   const VENUES = "Coinbase spot · Uniswap v4 (Ethereum)";
+  let lastPrice = null;
+  let lastFarm = null;
 
   function setLoading(on){
-    statCells.forEach(id => $(id).classList.toggle("skel", on));
+    statCells.concat(farmCells).forEach(id => $(id).classList.toggle("skel", on));
     $("refreshBtn").disabled = on;
     $("liveDot").classList.toggle("on", on);
     if (on){ $("statusText").textContent = "Fetching live market data…"; }
   }
 
   function renderNumbers(d, sourceLabel){
+    if (typeof d.price_usd === "number") lastPrice = d.price_usd;
     $("vPrice").textContent = fmtPrice(d.price_usd);
     const chg = fmtChg(d.change_24h_pct);
     $("vChange").textContent = chg.t;
@@ -544,9 +656,64 @@
     $("pulseCard").classList.add("fade-in");
   }
 
+  // ---------- Farm: on-chain read ----------
+  // USDS -> GROVE farm (StakingRewards) per the Jul 2, 2026 Sky executive spell.
+  const FARM = "0x4E41488C19cD35EB4de3083Fc3e204854c75c86a"; // REWARDS_USDS_GROVE
+  const RPCS = [
+    "https://ethereum-rpc.publicnode.com",
+    "https://eth.llamarpc.com",
+    "https://cloudflare-eth.com"
+  ];
+  const SELECTORS = { totalSupply:"0x18160ddd", rewardRate:"0x7b0a47ee", periodFinish:"0xebe2b12b" };
+  const wad = h => { try { return Number(BigInt(h)) / 1e18; } catch(e){ return null; } };
+
+  async function fetchFarmOnchain(){
+    const keys = Object.keys(SELECTORS);
+    const body = keys.map((k,i)=>({jsonrpc:"2.0",id:i+1,method:"eth_call",params:[{to:FARM,data:SELECTORS[k]},"latest"]}));
+    let lastErr = null;
+    for (const rpc of RPCS){
+      try {
+        const r = await fetch(rpc, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+        if (!r.ok) throw new Error(rpc + " returned " + r.status);
+        const j = await r.json();
+        if (!Array.isArray(j) || j.length < 3 || j.some(x => x.error || !x.result)) throw new Error("bad payload from " + rpc);
+        const byId = {}; j.forEach(x => byId[x.id] = x.result);
+        return {
+          staked: wad(byId[1]),
+          rate: wad(byId[2]),
+          finish: parseInt(byId[3], 16)
+        };
+      } catch(err){ lastErr = err; console.log("RPC unavailable:", rpc); }
+    }
+    throw (lastErr || new Error("all RPCs unavailable"));
+  }
+
+  function renderFarm(f, srcLabel){
+    lastFarm = { d:f, src:srcLabel };
+    $("fStaked").textContent = fmtBig(f.staked);
+    $("fRate").textContent = (f.rate != null && f.rate > 0) ? fmtTok(f.rate * 86400) : (f.rate === 0 ? "0" : "—");
+    const apr = (f.rate > 0 && f.staked > 0 && lastPrice) ? (f.rate * 31536000 * lastPrice / f.staked) * 100 : null;
+    $("fApr").textContent = apr != null ? apr.toFixed(1) + "%" : "—";
+    $("fEnd").textContent = (f.finish && f.finish > 0) ? new Date(f.finish * 1000).toLocaleDateString("en-US",{month:"short",day:"numeric"}) : "—";
+    if (f.staked === 0 && f.rate === 0){
+      $("farmNote").textContent = "Contract currently reads zero — the initialization spell executes after Jul 6, 18:00 UTC; if this persists, check vote.sky.money.";
+    } else {
+      $("farmNote").textContent = "Read " + srcLabel + ".";
+    }
+  }
+
+  function renderFarmFromAi(ai){
+    lastFarm = null;
+    $("fStaked").textContent = fmtBig(ai.farm_usds_staked);
+    $("fRate").textContent = "—";
+    $("fApr").textContent = (typeof ai.farm_apr_pct === "number") ? ai.farm_apr_pct.toFixed(1) + "%" : "—";
+    $("fEnd").textContent = "—";
+    $("farmNote").textContent = "Figures via Claude web search — on-chain read unavailable in this environment.";
+  }
+
   const usd = o => (o && typeof o.usd === "number") ? o.usd : null;
 
-  // Primary source: CoinGecko public API. Listing verified against the GROVE
+  // Primary market source: CoinGecko public API. Listing verified against the GROVE
   // contract 0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406 — CoinGecko ID "grove-2".
   async function fetchCoinGecko(){
     const r = await fetch("https://api.coingecko.com/api/v3/coins/grove-2?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false");
@@ -565,9 +732,9 @@
     };
   }
 
-  // Market-pulse narrative + fallback numbers: Claude with live web search.
+  // Market-pulse narrative + fallback figures: Claude with live web search.
   async function fetchClaude(){
-    const prompt = 'Search the web for the CURRENT market data of the GROVE token issued by Grove Protocol (grove.finance), the Sky Ecosystem Prime Agent. This is an ERC-20 on Ethereum (contract 0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406) with a fixed total supply of 10,000,000,000 that began spot trading on Coinbase (GROVE-USD) on July 6, 2026; it is listed on CoinGecko under the ID grove-2 (coingecko.com/en/coins/grove — prefer the figures shown there when available) and also trades on Uniswap v4 on Ethereum. CRITICAL: do NOT use data for unrelated look-alike tokens such as GroveCoin (GRV), the GroveWars GROVE token on Theta, or GROOVE — if a figure cannot be verified for the correct Grove Protocol token, use null for that field. Respond with ONLY a raw JSON object (no markdown fences, no commentary) in exactly this shape: {"price_usd":number|null,"change_24h_pct":number|null,"volume_24h_usd":number|null,"market_cap_usd":number|null,"fdv_usd":number|null,"low_24h":number|null,"high_24h":number|null,"pulse":"string","sources":[{"title":"string","url":"string"}],"as_of":"string"}. "pulse" is a neutral 2-3 sentence summary of how the GROVE launch is trading right now (price action since the July 6 Coinbase debut, volume, notable venues or news). "low_24h" and "high_24h" are the 24-hour USD price range if reported. "as_of" is the approximate timestamp of the data you found. Numbers must be plain numbers in USD, no strings, no commas.';
+    const prompt = 'Search the web for the CURRENT market data of the GROVE token issued by Grove Protocol (grove.finance), the Sky Ecosystem Prime Agent. This is an ERC-20 on Ethereum (contract 0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406) with a fixed total supply of 10,000,000,000 that began spot trading on Coinbase (GROVE-USD) on July 6, 2026; it is listed on CoinGecko under the ID grove-2 (coingecko.com/en/coins/grove — prefer the figures shown there when available) and also trades on Uniswap v4 on Ethereum. Also report the USDS -> GROVE farm if findable: "farm_usds_staked" is total USDS staked in the farm contract 0x4E41488C19cD35EB4de3083Fc3e204854c75c86a and "farm_apr_pct" its current reward APR. CRITICAL: do NOT use data for unrelated look-alike tokens such as GroveCoin (GRV), the GroveWars GROVE token on Theta, or GROOVE — if a figure cannot be verified for the correct Grove Protocol token, use null for that field. Respond with ONLY a raw JSON object (no markdown fences, no commentary) in exactly this shape: {"price_usd":number|null,"change_24h_pct":number|null,"volume_24h_usd":number|null,"market_cap_usd":number|null,"fdv_usd":number|null,"low_24h":number|null,"high_24h":number|null,"farm_usds_staked":number|null,"farm_apr_pct":number|null,"pulse":"string","sources":[{"title":"string","url":"string"}],"as_of":"string"}. "pulse" is a neutral 2-3 sentence summary of how the GROVE launch is trading right now (price action since the July 6 Coinbase debut, volume, and any notable farm, rewards, or claim activity or news). "low_24h" and "high_24h" are the 24-hour USD price range if reported. "as_of" is the approximate timestamp of the data you found. Numbers must be plain numbers in USD, no strings, no commas.';
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -591,7 +758,8 @@
   async function fetchLive(){
     setLoading(true);
     $("errBox").hidden = true;
-    let numbersOk = false;
+    $("farmNote").textContent = "";
+    let numbersOk = false, farmOk = false;
 
     try {
       renderNumbers(await fetchCoinGecko(), "CoinGecko");
@@ -601,13 +769,33 @@
     }
 
     try {
+      const f = await fetchFarmOnchain();
+      renderFarm(f, "on-chain via public RPC");
+      farmOk = true;
+    } catch (err) {
+      console.log("On-chain farm read unavailable from this environment.");
+    }
+
+    try {
       const ai = await fetchClaude();
-      if (!numbersOk && ai){ renderNumbers(ai, "Claude web search"); numbersOk = true; }
+      if (!numbersOk && ai){
+        renderNumbers(ai, "Claude web search");
+        numbersOk = true;
+        if (lastFarm) renderFarm(lastFarm.d, lastFarm.src); // recompute APR now that price is known
+      }
+      if (!farmOk && ai && (ai.farm_usds_staked != null || ai.farm_apr_pct != null)){
+        renderFarmFromAi(ai);
+        farmOk = true;
+      }
       renderPulse(ai);
     } catch (err) {
       console.log("Claude web search unavailable:", err && err.message ? err.message : err);
     }
 
+    if (!farmOk){
+      farmCells.forEach(id => { $(id).textContent = "—"; });
+      $("farmNote").textContent = "Live farm read unavailable in this environment — figures load when hosted (public RPC) or in Claude when signed in; live rate also on sky.money.";
+    }
     if (!numbersOk){
       statCells.forEach(id => { $(id).textContent = "—"; $(id).className = "value"; });
       $("vChangeSub").textContent = VENUES;
