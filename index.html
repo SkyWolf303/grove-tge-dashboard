@@ -168,8 +168,14 @@
   .vrow:last-child{border-bottom:none}
   .vname{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--bone);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .vtrack{height:9px;border-radius:99px;background:var(--skel-bg);overflow:hidden}
-  .vfill{height:100%;background:var(--fern);border-radius:99px}
+  .vfill{display:block;height:100%;background:var(--fern);border-radius:99px}
   .vval{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bone-dim);text-align:right}
+
+  .metric-def{font-size:12.5px;color:var(--bone-dim);margin:-6px 0 14px}
+  #venueBar{display:flex;height:14px;border-radius:99px;overflow:hidden;border:1px solid var(--hairline-soft);margin:2px 0 12px;background:var(--skel-bg)}
+  .vleg{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--hairline-soft);font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--bone-dim)}
+  .vleg:last-child{border-bottom:none}
+  .vleg .n{color:var(--bone);display:flex;align-items:center;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* Supply */
   .supply-num{font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;margin-bottom:4px}
@@ -361,23 +367,31 @@
     </div>
     <div class="two-col" style="margin-top:22px">
       <div class="card">
-        <h3>Supply, TVL &amp; venues<i class="info" tabindex="0">i<span class="tip">Circulating supply from CoinGecko (grove-2), displayed live and never hardcoded — the basis for a days-old token is provisional and CoinGecko has revised it during launch week. Genesis <b>allocation</b> (70/25/5) is a different concept and lives on the Record tab. Protocol TVL from DeFiLlama, falling back to the listing-day figure. Venue split from CoinGecko's tickers endpoint.</span></i></h3>
+        <h3>Circulating supply<i class="info" tabindex="0">i<span class="tip">Reported live by CoinGecko (grove-2), never hardcoded — the basis for a days-old token is provisional and CoinGecko revised GROVE's during launch week. Distinct from the genesis <b>allocation</b> (70/25/5, Record tab), which describes where the 10B was assigned, not what trades. The market-cap cell auto-flags if price × this figure stops matching the reported market cap.</span></i></h3>
+        <p class="metric-def">Tokens tradable on the market today, per CoinGecko — live.</p>
         <div class="supply-num" id="sCirc">—</div>
-        <div class="supply-cap">circulating of 10B total supply — <span id="sCircPct">—</span> · live per CoinGecko</div>
-        <div class="bar" role="img" aria-label="Circulating supply share of total supply">
+        <div class="supply-cap">of 10B total supply — <span id="sCircPct">—</span></div>
+        <div class="bar" role="img" aria-label="Circulating share of the 10B total supply">
           <div class="circ" id="sCircBar" style="width:0%"></div><div class="locked" id="sLockBar" style="width:100%"></div>
         </div>
-        <div class="bar-legend">
-          <span><i class="swatch sw-eth"></i>Circulating (per CoinGecko)</span>
-          <span><i class="swatch sw-rest"></i>Remainder of 10B supply</span>
-        </div>
-        <p class="alloc-note" style="margin-top:14px">Circulating supply ≠ genesis allocation: the 70/25/5 split on the Record tab describes where the 10B was <em>allocated</em> at genesis; circulating counts what the market data source treats as tradable today, a basis that data providers refine in a token's first weeks.</p>
-        <div class="txs-note" style="margin-top:14px" id="pTvlLine">Protocol TVL (live): <span id="pTvl">loading…</span><span id="pRatio"></span></div>
-        <h3 style="margin-top:24px">24h volume by venue</h3>
+      </div>
+      <div class="card">
+        <h3>Protocol TVL<i class="info" tabindex="0">i<span class="tip">Live from DeFiLlama (protocol slug <b>grove</b>); if unreachable, the listing-day snapshot is shown — $2.46–2.61B on Jul 6 per Crypto Briefing. Mcap/TVL compares the token's market cap to the assets the protocol manages.</span></i></h3>
+        <p class="metric-def">USD value of assets deployed through Grove Protocol vaults — live.</p>
+        <div class="supply-num" id="pTvl">—</div>
+        <div class="supply-cap" id="pRatio">&nbsp;</div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:22px">
+      <div class="card">
+        <h3>24h volume by venue<i class="info" tabindex="0">i<span class="tip">CoinGecko tickers for grove-2, aggregated by exchange; DEX/CEX tagged by name. A snapshot of the current 24 hours — per-venue history isn't available on free endpoints. Segments sum to 100% of tracked volume.</span></i></h3>
+        <p class="metric-def">Where the last 24h of GROVE trading happened — one bar, all venues = 100%.</p>
+        <div id="venueBar" role="img" aria-label="Share of 24 hour volume by venue"></div>
         <div id="venueList"><div class="txs-note" id="venueNote">Loading venue split…</div></div>
       </div>
       <div class="card">
-        <h3>Latest on-chain GROVE transfers<i class="info" tabindex="0">i<span class="tip">Source: Transfer events read from the GROVE token contract <a href="https://etherscan.io/token/0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406" target="_blank" rel="noopener">0xB30F…9406</a> via public Ethereum RPC, with Blockscout as a fallback feed. RPC ages are estimated from block numbers (~12s per block); Blockscout ages are exact.</span></i></h3>
+        <h3>Latest on-chain GROVE transfers<i class="info" tabindex="0">i<span class="tip">Transfer events read from the GROVE token contract <a href="https://etherscan.io/token/0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406" target="_blank" rel="noopener">0xB30F…9406</a> via public Ethereum RPC, with Blockscout as fallback. RPC ages are estimated (~12s/block); Blockscout ages are exact.</span></i></h3>
+        <p class="metric-def">Most recent GROVE movements on Ethereum, straight from the token contract.</p>
         <ul class="txs" id="txList"><li style="grid-template-columns:1fr;border:none"><span class="txs-note">Loading transfers…</span></li></ul>
         <div class="txs-note" id="txNote"></div>
       </div>
@@ -401,7 +415,7 @@
       <span id="vestLine">Vest schedule loading…</span>
     </div>
     <div class="farm-note"><span id="claimLine"></span></div>
-    <div class="farm-note"><span id="farmNote"></span> Mechanics, the 2.45B / 730-day stream, and the activity log live in the Token &amp; launch record tab.</div>
+    <div class="farm-note"><span id="farmNote"></span></div>
   </section>
 
 </div>
@@ -605,7 +619,7 @@
   const statCells = ["vPrice","vChange","vVol","vMcap","vFdv"];
   const farmCells = ["fStaked","fRate","fApr","fEnd"];
   const VENUES = "multi-venue — see 24h volume by venue";
-  let lastPrice = null, lastFarm = null;
+  let lastPrice = null, lastFarm = null, lastMcap = null;
 
   function setLoading(on){
     statCells.concat(farmCells).forEach(id => $(id).classList.toggle("skel", on));
@@ -625,6 +639,7 @@
       ? "24h range " + fmtPrice(d.low_24h) + " – " + fmtPrice(d.high_24h)
       : VENUES;
     $("vVol").textContent  = fmtBig(d.volume_24h_usd);
+    if (typeof d.market_cap_usd === "number") lastMcap = d.market_cap_usd;
     $("vMcap").textContent = fmtBig(d.market_cap_usd);
     $("vFdv").textContent  = fmtBig(d.fdv_usd);
     if (typeof d.circulating === "number" && d.circulating > 0){
@@ -761,17 +776,17 @@
     const total = rows.reduce((s,x) => s + x.vol, 0);
     let shown = rows.slice(0,5);
     const rest = rows.slice(5);
-    if (rest.length) shown.push({ name:"Other venues", vol:rest.reduce((s,x)=>s+x.vol,0), pools:rest.reduce((s,x)=>s+x.pools,0), dex:null });
-    $("venueList").innerHTML = shown.map(x => {
+    if (rest.length) shown.push({ name:"Other", vol:rest.reduce((s,x)=>s+x.vol,0), pools:rest.reduce((s,x)=>s+x.pools,0), dex:null });
+    const COLORS = ["var(--fern)","var(--leaf)","var(--ochre)","var(--alloc-team)","var(--ember)","var(--bar-rest)"];
+    $("venueBar").innerHTML = shown.map((x,i) =>
+      '<div style="width:'+(x.vol/total*100).toFixed(2)+'%;background:'+COLORS[i%COLORS.length]+'"></div>').join("");
+    $("venueList").innerHTML = shown.map((x,i) => {
       const pct = x.vol / total * 100;
       const tag = x.dex === null ? "" : (x.dex ? " · DEX" : " · CEX");
       const pools = x.pools > 1 ? " · " + x.pools + " pairs" : "";
-      const lbl = x.name + tag + pools;
-      return '<div class="vrow"><span class="vname" title="'+lbl+'">'+lbl+'</span>'
-        + '<span class="vtrack"><span class="vfill" style="width:'+pct.toFixed(1)+'%"></span></span>'
-        + '<span class="vval">'+pct.toFixed(1)+'% · '+fmtBig(x.vol)+'</span></div>';
+      return '<div class="vleg"><span class="n"><i class="swatch" style="background:'+COLORS[i%COLORS.length]+'"></i>'+x.name+tag+pools+'</span>'
+        + '<span>'+pct.toFixed(1)+'% · '+fmtBig(x.vol)+'</span></div>';
     }).join("");
-    $("venueNote") && ($("venueNote").style.display = "none");
   }
 
   async function fetchLlamaTvl(){
@@ -780,14 +795,11 @@
       if (!r.ok) throw new Error("llama " + r.status);
       const n = parseFloat(await r.text());
       if (!isFinite(n) || n <= 0) throw new Error("bad tvl");
-      $("pTvl").textContent = fmtBig(n) + " (DeFiLlama)";
-      const mcapTxt = $("vMcap").textContent;
-      if (lastPrice && mcapTxt !== "—"){
-        const m = parseFloat(mcapTxt.replace(/[$,]/g,"")) * (mcapTxt.includes("B") ? 1e9 : mcapTxt.includes("M") ? 1e6 : mcapTxt.includes("K") ? 1e3 : 1);
-        if (isFinite(m) && m > 0) $("pRatio").textContent = " · Mcap/TVL " + (m / n).toFixed(3);
-      }
+      $("pTvl").textContent = fmtBig(n);
+      $("pRatio").textContent = (lastMcap && lastMcap > 0) ? "Mcap / TVL — " + (lastMcap / n).toFixed(3) : "DeFiLlama · live";
     } catch(e){
-      $("pTvl").textContent = "$2.46–2.61B at listing (Jul 6, Crypto Briefing) — live figure loads on the hosted page";
+      $("pTvl").textContent = "$2.46–2.61B";
+      $("pRatio").textContent = "at listing (Jul 6) — live feed loads on the hosted page";
     }
   }
 
@@ -799,11 +811,11 @@
     const nowS = Date.now() / 1000;
     const daysIn = Math.min(VEST_DAYS, Math.max(0, (nowS - VEST_EXEC_S) / 86400));
     $("vestBar").style.width = (daysIn / VEST_DAYS * 100).toFixed(2) + "%";
-    $("vestLine").textContent = "Vest: day " + Math.max(1, Math.ceil(daysIn)) + " of 730 · ≈" + fmtTok(daysIn * VEST_PER_DAY) + " GROVE streamed to date (schedule basis, from Jul 6 execution)";
+    $("vestLine").textContent = "Vest: day " + Math.max(1, Math.ceil(daysIn)) + " of 730 · ≈" + fmtTok(daysIn * VEST_PER_DAY) + " GROVE streamed (schedule basis)";
     const daysLeft = Math.ceil((CLAIM_END_MS - Date.now()) / 86400000);
     $("claimLine").textContent = daysLeft > 0
-      ? "Early-community claim: ~" + daysLeft + " days remaining of the 90-day window (closes ~Oct 4) · app.grove.finance"
-      : "Early-community claim window has closed (90 days from Jul 6).";
+      ? "Claim window: ~" + daysLeft + " days left (closes ~Oct 4) · app.grove.finance"
+      : "Claim window closed (90 days from Jul 6).";
   }
 
   /* ---------- On-chain: farm + transfers ---------- */
@@ -903,7 +915,7 @@
           + '<span class="tx-route">' + from + ' <b>→</b> ' + to + '</span>'
           + '<span class="tx-age"><a href="https://etherscan.io/tx/' + hash + '" target="_blank" rel="noopener">' + (mins != null ? ageFromMins(mins) : "view") + '</a></span></li>';
       });
-      note = "Latest " + data.items.length + " GROVE transfers via Blockscout · amounts in GROVE · tap an age to open the transaction on Etherscan.";
+      note = "Amounts in GROVE · via Blockscout · tap an age for Etherscan.";
     } else {
       rows = data.logs.map(l => {
         const amt = wad(l.data);
@@ -915,7 +927,7 @@
           + '<span class="tx-route">' + from + ' <b>→</b> ' + to + '</span>'
           + '<span class="tx-age"><a href="https://etherscan.io/tx/' + l.transactionHash + '" target="_blank" rel="noopener">' + ageFromMins(mins) + '</a></span></li>';
       });
-      note = "Latest " + data.logs.length + " GROVE transfers read on-chain · amounts in GROVE · ages estimated from block numbers · tap an age to open the transaction on Etherscan.";
+      note = "Amounts in GROVE · read on-chain, ages estimated from blocks · tap an age for Etherscan.";
     }
     $("txList").innerHTML = rows.length ? rows.join("")
       : '<li style="grid-template-columns:1fr;border:none"><span class="txs-note">No recent transfers found.</span></li>';
