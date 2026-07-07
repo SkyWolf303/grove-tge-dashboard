@@ -25,3 +25,9 @@ All notable changes to the dashboard. Dates are 2026.
 ## Jul 7 — Initial release
 - Single-file launch dashboard: live ledger, launch log, token facts, TVL, distribution, footer links, disclaimer
 - Published to GitHub Pages
+
+## Jul 7 — Team feedback round (Louis)
+- Metric format adopted: one concept per card — Circulating supply, Protocol TVL, Volume by venue, Transfers — each with a one-line definition; explanatory prose moved into ⓘ tooltips
+- Venue split redrawn as a single stacked 100% bar with a color-keyed legend (and fixed a rendering bug where inline-span fills ignored width, making every per-row bar look full)
+- Ledger label clarified to "24h price change" with an explicit tooltip
+- Trimmed on-page wording across farm notes, schedule lines, and transfer captions
