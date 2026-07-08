@@ -31,3 +31,7 @@ All notable changes to the dashboard. Dates are 2026.
 - Venue split redrawn as a single stacked 100% bar with a color-keyed legend (and fixed a rendering bug where inline-span fills ignored width, making every per-row bar look full)
 - Ledger label clarified to "24h price change" with an explicit tooltip
 - Trimmed on-page wording across farm notes, schedule lines, and transfer captions
+
+## Jul 8 — Farm history
+- USDS-staked and indicative-APR history charts since launch, reconstructed client-side via archival `eth_call` sampling (PublicNode / LlamaNodes) joined with the CoinGecko price series
+- Adaptive sampling holds ~100 points regardless of farm age; graceful placeholders where archival RPCs are unreachable
