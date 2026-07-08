@@ -23,6 +23,7 @@ Vest parameters per the [Jul 2, 2026 Sky executive vote](https://github.com/sky-
 | Protocol TVL | `GET api.llama.fi/tvl/grove` | Falls back to the listing-day figure ($2.46–2.61B, Jul 6, Crypto Briefing), clearly labeled |
 | Farm: USDS staked / GROVE per day / period end | `eth_call` batch on the farm: `totalSupply()` `0x18160ddd`, `rewardRate()` `0x7b0a47ee`, `periodFinish()` `0xebe2b12b` | RPCs tried in order: `ethereum-rpc.publicnode.com`, `eth.llamarpc.com`, `cloudflare-eth.com`. USDS ≈ USD assumed |
 | Indicative APR | computed: `rewardRate × 31,536,000 × price ÷ staked` | Moves with price and pool size; labeled indicative |
+| Farm history (staked & APR since launch) | `eth_call` for `totalSupply()`/`rewardRate()` at ~evenly sampled **historical blocks** via archival public RPCs (PublicNode, LlamaNodes); APR joins each point with the CoinGecko price series | Adaptive sampling (~100 points regardless of age); block times estimated ~12s; APR omits near-empty-pool / zero-rate points; depends on RPCs serving archival state |
 | Transfers | `eth_getLogs` topic `0xddf252ad…` on the token (≈880-block window, widened to 7,000 if sparse) | Ages estimated at ~12 s/block. Fallback: `GET eth.blockscout.com/api/v2/tokens/{token}/transfers` (exact timestamps) |
 | Market pulse (in-Claude only) | Anthropic API + web-search tool, strict-JSON prompt | Scoped to the contract; **look-alike exclusion**: GroveCoin (GRV), GroveWars GROVE (Theta), GROOVE all pollute aggregators; instructed to return null rather than guess |
 
