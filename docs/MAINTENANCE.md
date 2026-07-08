@@ -44,7 +44,7 @@ Static copy that is deliberately **dated** (do not "refresh" it, it is a record)
 - **Claim-uptake tracker** — needs the claim/distributor contract address, not yet published; once known, `claimed vs allocated` is one `eth_call`.
 - **Holder growth / top-holder concentration** — no keyless historical feed; Blockscout `/api/v2/tokens/{addr}` gives a current holder count if a snapshot-only stat is acceptable.
 - **GROVE vs SPK at equal days-since-TGE** — CoinGecko `market_chart` on `spark-2`-equivalent ID; needs the SPK listing date pinned.
-- **Farm TVL/APR sparklines** — requires storing snapshots (this page is stateless by design); a tiny GitHub Action committing a JSON time series would do it.
+- **Farm history durability** — history is currently reconstructed from archival public RPCs on every load (adaptive ~100-point sampling, so cost is constant). A tiny GitHub Action committing hourly JSON snapshots would make it independent of archival RPC availability; note that pushing workflow files needs the token to also carry the **Workflows** permission.
 
 ## Troubleshooting
 
