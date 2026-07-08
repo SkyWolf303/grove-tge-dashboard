@@ -416,6 +416,30 @@
     </div>
     <div class="farm-note"><span id="claimLine"></span></div>
     <div class="farm-note"><span id="farmNote"></span></div>
+    <div class="two-col" style="margin-top:22px">
+      <div class="card">
+        <div class="chart-head">
+          <h3>USDS staked — history<i class="info" tabindex="0">i<span class="tip">Reconstructed client-side: <b>totalSupply()</b> on the farm contract, called at ~evenly sampled historical blocks via archival public RPCs (PublicNode, LlamaNodes). Block times estimated at ~12s; sampling adapts to hold ~100 points as the farm ages, so cost stays constant.</span></i></h3>
+          <span class="mono-sm" id="farmStakedMeta">since launch</span>
+        </div>
+        <p class="metric-def">Total USDS deposited in the farm at each point in time — read on-chain.</p>
+        <div class="chart-box">
+          <svg id="farmStakedChart" viewBox="0 0 560 220" role="img" aria-label="USDS staked in the GROVE farm over time"></svg>
+          <div class="empty-note" id="farmStakedEmpty">Loading…</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chart-head">
+          <h3>Indicative APR — history<i class="info" tabindex="0">i<span class="tip"><b>rewardRate × seconds-per-year × GROVE price at that moment ÷ USDS staked</b>, at each sampled block. Prices join from the CoinGecko series; points with a near-empty pool or zero reward rate are omitted, and the first hours can be noisy while the pool is small.</span></i></h3>
+          <span class="mono-sm" id="farmAprMeta">since launch</span>
+        </div>
+        <p class="metric-def">Reward stream value ÷ staked, priced at each moment — indicative.</p>
+        <div class="chart-box">
+          <svg id="farmAprChart" viewBox="0 0 560 220" role="img" aria-label="Farm indicative APR over time"></svg>
+          <div class="empty-note" id="farmAprEmpty">Loading…</div>
+        </div>
+      </div>
+    </div>
   </section>
 
 </div>
@@ -524,7 +548,7 @@
     <div class="two-col">
       <div class="card method">
         <h3>Live figures</h3>
-        <p><b>Two sources, environment-dependent.</b> Viewed inside Claude, the artifact sandbox blocks third-party APIs, so figures arrive via Claude's live web search — which is directed to read CoinGecko's Grove listing (ID <a href="https://www.coingecko.com/en/coins/grove" target="_blank" rel="noopener">grove-2</a>, verified against the official contract 0xB30F…9406). Hosted or opened outside Claude, the page pulls the same figures directly from CoinGecko's public API. The status bar always names the source that produced the numbers on screen. Charts and the venue split use CoinGecko's market-history and tickers endpoints. Farm figures are read on-chain — totalSupply, rewardRate, and periodFinish straight from the REWARDS_USDS_GROVE farm contract — and the transfer feed reads Transfer events from the GROVE token contract via public Ethereum RPCs, falling back to Blockscout. <b>Supply basis:</b> circulating supply and market cap are displayed live from CoinGecko and never hardcoded — during launch week (Jul 7) CoinGecko revised GROVE’s circulating basis, so any static claim about it goes stale; the page also flags if price × circulating stops matching the reported market cap.</p>
+        <p><b>Two sources, environment-dependent.</b> Viewed inside Claude, the artifact sandbox blocks third-party APIs, so figures arrive via Claude's live web search — which is directed to read CoinGecko's Grove listing (ID <a href="https://www.coingecko.com/en/coins/grove" target="_blank" rel="noopener">grove-2</a>, verified against the official contract 0xB30F…9406). Hosted or opened outside Claude, the page pulls the same figures directly from CoinGecko's public API. The status bar always names the source that produced the numbers on screen. Charts and the venue split use CoinGecko's market-history and tickers endpoints. Farm figures are read on-chain — totalSupply, rewardRate, and periodFinish straight from the REWARDS_USDS_GROVE farm contract — and the transfer feed reads Transfer events from the GROVE token contract via public Ethereum RPCs, falling back to Blockscout. Farm <b>history</b> is reconstructed client-side: totalSupply and rewardRate are eth_call\u2019d at ~evenly sampled historical blocks over archival public RPCs, joined with the CoinGecko price series for APR — sampling holds ~100 points regardless of farm age. <b>Supply basis:</b> circulating supply and market cap are displayed live from CoinGecko and never hardcoded — during launch week (Jul 7) CoinGecko revised GROVE’s circulating basis, so any static claim about it goes stale; the page also flags if price × circulating stops matching the reported market cap.</p>
         <p><b>Guardrails on the web-search layer.</b> The query is scoped to the contract, look-alike tickers are excluded by name — GroveCoin (GRV), the GroveWars token on Theta, and GROOVE all pollute aggregators — and it's instructed to leave a blank rather than guess. Sources found on each refresh appear as linked chips in the Market pulse card. This layer requires the viewer to be signed in to Claude; the direct CoinGecko and on-chain paths do not.</p>
         <p>Live figures can lag real-time and should be verified against an exchange or Grove Data before external use.</p>
       </div>
@@ -738,12 +762,13 @@
     hit.addEventListener("mouseleave", onLeave);
   }
 
-  let lastLowHigh = null;
+  let lastLowHigh = null, lastPriceSeries = null;
   async function fetchCharts(){
     const r = await fetch("https://api.coingecko.com/api/v3/coins/grove-2/market_chart?vs_currency=usd&days=14");
     if (!r.ok) throw new Error("market_chart " + r.status);
     const j = await r.json();
     if (!j.prices || j.prices.length < 2) throw new Error("no series");
+    lastPriceSeries = j.prices;
     const span = (j.prices[j.prices.length-1][0] - j.prices[0][0]) / 86400000;
     const spanTxt = "since listing · " + (span < 2 ? span.toFixed(1) : Math.round(span)) + "d";
     $("priceChartMeta").textContent = spanTxt + " · USD";
@@ -800,6 +825,81 @@
     } catch(e){
       $("pTvl").textContent = "$2.46–2.61B";
       $("pRatio").textContent = "at listing (Jul 6) — live feed loads on the hosted page";
+    }
+  }
+
+  function priceAt(ms){
+    const S = lastPriceSeries;
+    if (!S || S.length < 2) return null;
+    if (ms <= S[0][0]) return S[0][1];
+    if (ms >= S[S.length-1][0]) return S[S.length-1][1];
+    let lo = 0, hi = S.length - 1;
+    while (hi - lo > 1){ const m = (lo + hi) >> 1; (S[m][0] < ms) ? lo = m : hi = m; }
+    return (ms - S[lo][0] < S[hi][0] - ms) ? S[lo][1] : S[hi][1];
+  }
+
+  /* ---------- Farm history: archival eth_call reconstruction ---------- */
+  const FARM_START_S = 1783296000; // Jul 6, 2026 00:00 UTC — sampling starts on listing day
+  async function fetchFarmHistory(){
+    const ARCHIVAL = ["https://ethereum-rpc.publicnode.com","https://eth.llamarpc.com"];
+    let latest = null;
+    for (const rpc of ARCHIVAL){
+      try { const r = await rpcCall(rpc, {jsonrpc:"2.0",id:1,method:"eth_blockNumber",params:[]});
+            if (r.result){ latest = parseInt(r.result,16); break; } } catch(e){}
+    }
+    if (!latest) throw new Error("no archival rpc reachable");
+    const nowS = Math.floor(Date.now()/1000);
+    const startS = Math.max(FARM_START_S, nowS - 365*86400);
+    const N = Math.min(96, Math.max(24, Math.floor((nowS - startS) / 1800)));
+    const pts = [];
+    for (let i = 0; i < N; i++){
+      const t = startS + (nowS - startS) * i / (N - 1);
+      const blk = latest - Math.round((nowS - t) / 12);
+      if (blk > 0) pts.push({ t: t * 1000, blk: blk });
+    }
+    const reqs = [];
+    pts.forEach((p,i) => {
+      const tag = "0x" + p.blk.toString(16);
+      reqs.push({jsonrpc:"2.0",id:i*2+1,method:"eth_call",params:[{to:FARM,data:SELECTORS.totalSupply},tag]});
+      reqs.push({jsonrpc:"2.0",id:i*2+2,method:"eth_call",params:[{to:FARM,data:SELECTORS.rewardRate},tag]});
+    });
+    const out = {};
+    for (let off = 0; off < reqs.length; off += 50){
+      const chunk = reqs.slice(off, off + 50);
+      let ok = false;
+      for (const rpc of ARCHIVAL){
+        try {
+          const j = await rpcCall(rpc, chunk);
+          if (!Array.isArray(j)) throw new Error("not a batch response");
+          j.forEach(x => { if (x && x.result) out[x.id] = x.result; });
+          ok = true; break;
+        } catch(e){ console.log("history chunk via", rpc, "failed:", e && e.message); }
+      }
+      if (!ok) console.log("history chunk", off, "unavailable — continuing with partial data");
+    }
+    const staked = [], apr = [];
+    pts.forEach((p,i) => {
+      const sv = out[i*2+1] != null ? wad(out[i*2+1]) : null;
+      const rv = out[i*2+2] != null ? wad(out[i*2+2]) : null;
+      if (sv != null) staked.push([p.t, sv]);
+      if (sv != null && rv != null && sv > 1e4 && rv > 0){
+        const pr = priceAt(p.t);
+        if (pr) apr.push([p.t, (rv * 31536000 * pr / sv) * 100]);
+      }
+    });
+    if (staked.length < 2) throw new Error("no usable history points");
+    return { staked: staked, apr: apr };
+  }
+
+  function renderFarmHistory(h){
+    const spanTxt = ts => "since launch · " + (((ts[ts.length-1][0]-ts[0][0])/86400000) < 2 ? ((ts[ts.length-1][0]-ts[0][0])/86400000).toFixed(1) : Math.round((ts[ts.length-1][0]-ts[0][0])/86400000)) + "d";
+    $("farmStakedMeta").textContent = spanTxt(h.staked);
+    drawSeries("farmStakedChart", "farmStakedEmpty", h.staked, fmtBig, "staked");
+    if (h.apr.length >= 2){
+      $("farmAprMeta").textContent = spanTxt(h.apr);
+      drawSeries("farmAprChart", "farmAprEmpty", h.apr, v => v.toFixed(1) + "%", "APR");
+    } else {
+      $("farmAprEmpty").textContent = "APR history joins on-chain reads with the CoinGecko price series — loads on the hosted page.";
     }
   }
 
@@ -983,9 +1083,15 @@
     try { renderNumbers(await fetchCoinGecko(), "CoinGecko"); numbersOk = true; }
     catch (err){ console.log("CoinGecko not reachable from this environment (expected inside Claude artifacts) — using Claude web search instead."); }
 
-    fetchCharts().catch(() => {
+    const chartsP = fetchCharts().catch(() => {
       $("priceChartEmpty").textContent = "Chart loads on the hosted page — this environment blocks the CoinGecko API.";
       $("volChartEmpty").textContent = "Chart loads on the hosted page — this environment blocks the CoinGecko API.";
+    });
+    chartsP.finally(() => {
+      fetchFarmHistory().then(renderFarmHistory).catch(() => {
+        $("farmStakedEmpty").textContent = "History loads on the hosted page — reconstructed via archival public RPCs, blocked in this environment.";
+        $("farmAprEmpty").textContent = "History loads on the hosted page — reconstructed via archival public RPCs, blocked in this environment.";
+      });
     });
     fetchVenues().catch(() => { $("venueNote").textContent = "Venue split loads on the hosted page — this environment blocks the CoinGecko API."; });
     fetchLlamaTvl();
