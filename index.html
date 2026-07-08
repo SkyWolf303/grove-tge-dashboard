@@ -841,7 +841,7 @@
   /* ---------- Farm history: archival eth_call reconstruction ---------- */
   const FARM_START_S = 1783296000; // Jul 6, 2026 00:00 UTC — sampling starts on listing day
   async function fetchFarmHistory(){
-    const ARCHIVAL = ["https://ethereum-rpc.publicnode.com","https://eth.llamarpc.com"];
+    const ARCHIVAL = ["https://ethereum-rpc.publicnode.com","https://eth.llamarpc.com","https://eth.drpc.org"];
     let latest = null;
     for (const rpc of ARCHIVAL){
       try { const r = await rpcCall(rpc, {jsonrpc:"2.0",id:1,method:"eth_blockNumber",params:[]});
@@ -864,18 +864,39 @@
       reqs.push({jsonrpc:"2.0",id:i*2+2,method:"eth_call",params:[{to:FARM,data:SELECTORS.rewardRate},tag]});
     });
     const out = {};
-    for (let off = 0; off < reqs.length; off += 50){
-      const chunk = reqs.slice(off, off + 50);
-      let ok = false;
+    // Tier 1: small batches (some public RPCs cap or reject large batch arrays)
+    async function tryBatch(chunk){
       for (const rpc of ARCHIVAL){
         try {
           const j = await rpcCall(rpc, chunk);
-          if (!Array.isArray(j)) throw new Error("not a batch response");
-          j.forEach(x => { if (x && x.result) out[x.id] = x.result; });
-          ok = true; break;
-        } catch(e){ console.log("history chunk via", rpc, "failed:", e && e.message); }
+          if (Array.isArray(j) && j.length){
+            j.forEach(x => { if (x && x.result) out[x.id] = x.result; });
+            return true;
+          }
+        } catch(e){ console.log("history batch via", rpc, "failed:", e && e.message); }
       }
-      if (!ok) console.log("history chunk", off, "unavailable — continuing with partial data");
+      return false;
+    }
+    let batchFailed = false;
+    for (let off = 0; off < reqs.length; off += 16){
+      if (!(await tryBatch(reqs.slice(off, off + 16)))) batchFailed = true;
+    }
+    // Tier 2: single-call fallback on a reduced grid — same proven path as the live strip
+    const missingPts = pts.map((p,i)=>i).filter(i => out[i*2+1] == null);
+    if (missingPts.length){
+      console.log("history: batches incomplete (" + missingPts.length + " points missing) — falling back to single calls on a reduced grid");
+      const stride = Math.max(1, Math.ceil(missingPts.length / 28));
+      const reduced = missingPts.filter((_,k) => k % stride === 0);
+      for (const i of reduced){
+        for (const rq of [reqs[i*2], reqs[i*2+1]]){
+          if (out[rq.id] != null) continue;
+          for (const rpc of ARCHIVAL){
+            try { const j = await rpcCall(rpc, {jsonrpc:"2.0",id:rq.id,method:rq.method,params:rq.params});
+                  if (j && j.result){ out[rq.id] = j.result; break; } }
+            catch(e){}
+          }
+        }
+      }
     }
     const staked = [], apr = [];
     pts.forEach((p,i) => {
@@ -1089,8 +1110,8 @@
     });
     chartsP.finally(() => {
       fetchFarmHistory().then(renderFarmHistory).catch(() => {
-        $("farmStakedEmpty").textContent = "History loads on the hosted page — reconstructed via archival public RPCs, blocked in this environment.";
-        $("farmAprEmpty").textContent = "History loads on the hosted page — reconstructed via archival public RPCs, blocked in this environment.";
+        $("farmStakedEmpty").textContent = "History couldn't load from archival public RPCs in this environment — hit Refresh data to retry (details in the browser console).";
+        $("farmAprEmpty").textContent = "History couldn't load from archival public RPCs in this environment — hit Refresh data to retry (details in the browser console).";
       });
     });
     fetchVenues().catch(() => { $("venueNote").textContent = "Venue split loads on the hosted page — this environment blocks the CoinGecko API."; });
